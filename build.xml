@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<project name="BurritoPOSServer" default="testjar" basedir=".">
+
+    <!-- properties are typically defined first -->
+    <property name="src.dir" value="${basedir}/src"/>
+    <property name="lib.dir" value="${basedir}/lib"/>
+    <property name="bin.dir" value="${basedir}/bin"/>
+    <property name="build.dir" value="${basedir}/build"/>
+    <property name="config.dir" value="${basedir}/config"/>
+
+	<fileset id="jars" dir="${lib.dir}">
+	  <include name="**/*.jar" />
+	</fileset>
+
+	<path id="cp"> <fileset refid="jars" /> </path>
+	
+    <!-- paths are then defined after the properties -->
+	<path id="classpath">
+		<pathelement location="${lib.dir}"/>
+	</path>
+
+	<target name="compile" depends="clean">
+		<javac srcdir="${src.dir}"
+		         destdir="${build.dir}"
+		         classpathref="cp"
+		         debug="on"
+		         source="1.6"
+		  />
+	</target>
+	
+    <!-- finally, define the targets that use Ant’s tasks -->
+    <target name="clean" 
+             description="deletes and creates the build directory">
+        <delete dir="${build.dir}"/>
+	    <mkdir dir="${build.dir}"/>
+	</target>
+
+	<target name="buildjar" depends="clean">
+	    <jar jarfile="${build.dir}/BurritoPOSserver.jar">
+		 <fileset dir="${basedir}">
+		     <include name="config/*"/>
+		 </fileset>
+	      	 <fileset dir="${bin.dir}">
+	    	    <include name="**/*.class"/>
+	      	 </fileset>
+		 <manifest>
+		    <attribute name="Main-Class" value="com.burritopos.server.Main"/>
+		 </manifest>
+	    </jar>
+	    <copy todir="${build.dir}">
+		 <fileset dir="${basedir}">
+	    	     <include name="config*/**/*"/>
+		 </fileset>
+	    </copy>
+	</target>
+
+	<target name="testjar" depends="buildjar">
+	    <java jar="${build.dir}/BurritoPOSserver.jar" fork="yes" dir=".">
+		</java>
+	</target>
+
+</project>
