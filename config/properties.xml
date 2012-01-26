@@ -2,5 +2,5 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 <comment>Service Providers</comment>
-<entry key="IUserSvc">src.com.burritopos.server.service.UserSvcHibernateImpl</entry>
+<entry key="IUserSvc">com.burritopos.server.service.UserSvcMongoImpl</entry>
 </properties>

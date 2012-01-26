@@ -59,4 +59,7 @@
 		</java>
 	</target>
 
+	<target name="javadoc">
+		<javadoc access="public" author="true" classpath="C:\Program Files (x86)\eclipse\plugins\org.junit_4.8.2.v4_8_2_v20110321-1705\junit.jar;C:\Jars\hibernate-release-4.0.1.Final\lib\required\hibernate-core-4.0.1.Final.jar;C:\Jars\apache-log4j-1.2.16\log4j-1.2.16.jar;C:\Program Files (x86)\eclipse\plugins\org.hamcrest.core_1.1.0.v20090501071000.jar;C:\Jars\mongo-2.7.2.jar" destdir="doc" doctitle="Burrito Point of Service Server" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="com.burritopos.server.domain,com.burritopos.server.business.test,com.burritopos.server.exception,com.burritopos.server.presentation,com.burritopos.server.business,com.burritopos.server.domain.test,com.burritopos.server.service.test,com.burritopos.server,com.burritopos.server.test,com.burritopos.server.service" source="1.6" sourcepath="src" splitindex="true" use="true" version="true" executable="C:\Program Files (x86)\Java\jdk1.6.0_25\bin\javadoc.exe"/>
+	</target>
 </project>
