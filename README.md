@@ -8,7 +8,6 @@ It serves as a starting point to refresh memory of or learn about new/existing l
 
 Currently demonstrates
 -------------------------
-Currently uses:
 * Eclipse
 * Java
 * Ant
@@ -22,9 +21,12 @@ Currently uses:
 * Mongo (NoSQL)
 * JavaDoc
   
-  TODO
+TODO
 -------------------------
-
+* Update business layer junit tests
+* Add presentation layer junit tests via Selenium
+* Add SSL socket implementation
+* Add Oauth and/or HMAC
 
 Notes
 -------------------------
