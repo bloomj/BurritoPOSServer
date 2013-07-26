@@ -1,65 +1,95 @@
 <?xml version="1.0"?>
-<project name="BurritoPOSServer" default="testjar" basedir=".">
+<project name="BurritoPOSServer" default="runjar" basedir=".">
 
+	<!-- use ant property file.separator for better platform independence -->
     <!-- properties are typically defined first -->
-    <property name="src.dir" value="${basedir}/src"/>
-    <property name="lib.dir" value="${basedir}/lib"/>
-    <property name="bin.dir" value="${basedir}/bin"/>
-    <property name="build.dir" value="${basedir}/build"/>
-    <property name="config.dir" value="${basedir}/config"/>
+    <property name="src.dir" value="${basedir}${file.separator}src"/>
+    <property name="lib.dir" value="${basedir}${file.separator}lib"/>
+    <property name="bin.dir" value="${basedir}${file.separator}bin"/>
+    <property name="build.dir" value="${basedir}${file.separator}build"/>
+    <property name="config.dir" value="${basedir}${file.separator}config"/>
+	<property name="report.dir" value="${build.dir}${file.separator}report"/>
 
-	<fileset id="jars" dir="${lib.dir}">
-	  <include name="**/*.jar" />
-	</fileset>
-
-	<path id="cp"> <fileset refid="jars" /> </path>
-	
-    <!-- paths are then defined after the properties -->
+	<!-- paths are then defined after the properties -->
 	<path id="classpath">
-		<pathelement location="${lib.dir}"/>
+		<pathelement location="${lib.dir}${file.separator}*"/>
+		<pathelement location="${bin.dir}${file.separator}*"/>
+		<pathelement location="${build.dir}${file.separator}BurritoPOSserver.jar"/>
 	</path>
-
-	<target name="compile" depends="clean">
-		<javac srcdir="${src.dir}"
-		         destdir="${build.dir}"
-		         classpathref="cp"
-		         debug="on"
-		         source="1.6"
-		  />
-	</target>
 	
     <!-- finally, define the targets that use Ant’s tasks -->
-    <target name="clean" 
-             description="deletes and creates the build directory">
+    <target name="clean" description="deletes and creates the build directory">
         <delete dir="${build.dir}"/>
 	    <mkdir dir="${build.dir}"/>
 	</target>
+	
+	<target name="compile" depends="clean">
+		<javac srcdir="${src.dir}"
+		         destdir="${build.dir}"
+		         classpathref="classpath"
+		         debug="on"
+		         source="1.7"
+		  />
+	</target>
 
 	<target name="buildjar" depends="clean">
-	    <jar jarfile="${build.dir}/BurritoPOSserver.jar">
-		 <fileset dir="${basedir}">
-		     <include name="config/*"/>
-		 </fileset>
-	      	 <fileset dir="${bin.dir}">
-	    	    <include name="**/*.class"/>
-	      	 </fileset>
+	    <jar jarfile="${build.dir}${file.separator}BurritoPOSserver.jar">
+			<fileset dir="${basedir}">
+			    <include name="config${file.separator}*"/>
+			</fileset>
+	      	<fileset dir="${bin.dir}">
+	      		<include name="**${file.separator}applicationContext.xml"/>
+	      		<include name="**${file.separator}burritoposserver.properties"/>
+	      		<include name="**${file.separator}hibernate${file.separator}*.xml"/>
+	    	    <include name="**${file.separator}*.class"/>
+	      	</fileset>
+
 		 <manifest>
 		    <attribute name="Main-Class" value="com.burritopos.server.Main"/>
 		 </manifest>
 	    </jar>
 	    <copy todir="${build.dir}">
 		 <fileset dir="${basedir}">
-	    	     <include name="config*/**/*"/>
+	    	     <include name="config*${file.separator}**${file.separator}*"/>
 		 </fileset>
 	    </copy>
 	</target>
 
-	<target name="testjar" depends="buildjar">
-	    <java jar="${build.dir}/BurritoPOSserver.jar" fork="yes" dir=".">
-		</java>
-	</target>
+    <target name="junit" depends="buildjar">
+        <mkdir dir="${report.dir}"/>
+        <junit printsummary="yes" haltonfailure="true" enableTestListenerEvents="true">
+            <classpath>
+            	<fileset dir="${lib.dir}" includes="*.jar"/>
+            	<fileset dir="${build.dir}" includes="BurritoPOSserver.jar"/>
+            </classpath>
+        	
+        	<formatter type="plain" usefile="false"/>
+            <formatter type="xml"/>
+            
+        	<!-- Run all Test Cases, ignoring the abstract base class -->
+            <batchtest todir="${report.dir}">
+                <fileset dir="${src.dir}" includes="**${file.separator}*TestCase.java" excludes="**${file.separator}*BurritoPOSTestCase.java"/>
+            </batchtest>
+        </junit>
+    </target>
+    
+    <target name="junitreport" depends="junit">
+        <junitreport todir="${report.dir}">
+            <fileset dir="${report.dir}" includes="TEST-*.xml"/>
+            <report todir="${report.dir}${file.separator}xml"/>
+        	<report format="frames" todir="${report.dir}${file.separator}html"/>
+        </junitreport>
+    </target>
 
-	<target name="javadoc">
-		<javadoc access="public" author="true" classpath="C:\Program Files (x86)\eclipse\plugins\org.junit_4.8.2.v4_8_2_v20110321-1705\junit.jar;C:\Jars\hibernate-release-4.0.1.Final\lib\required\hibernate-core-4.0.1.Final.jar;C:\Jars\apache-log4j-1.2.16\log4j-1.2.16.jar;C:\Program Files (x86)\eclipse\plugins\org.hamcrest.core_1.1.0.v20090501071000.jar;C:\Jars\mongo-2.7.2.jar" destdir="doc" doctitle="Burrito Point of Service Server" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="com.burritopos.server.domain,com.burritopos.server.business.test,com.burritopos.server.exception,com.burritopos.server.presentation,com.burritopos.server.business,com.burritopos.server.domain.test,com.burritopos.server.service.test,com.burritopos.server,com.burritopos.server.test,com.burritopos.server.service" source="1.6" sourcepath="src" splitindex="true" use="true" version="true" executable="C:\Program Files (x86)\Java\jdk1.6.0_25\bin\javadoc.exe"/>
+	<target name="javadoc" depends="junitreport">
+		<javadoc access="public" author="true" destdir="doc" classpath="${lib.dir}${file.separator}*" doctitle="Burrito Point of Service Server" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="com.burritopos.server.*" source="1.7" sourcepath="src" splitindex="true" use="true" version="true" executable="javadoc.exe"/>
+	</target>
+	
+	<target name="runjar" depends="javadoc">
+	    <java classname="com.burritopos.server.Main" fork="yes">
+            <classpath>
+                <path refid="classpath"/>
+            </classpath>
+	    </java>
 	</target>
 </project>

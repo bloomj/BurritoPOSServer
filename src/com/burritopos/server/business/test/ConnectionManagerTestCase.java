@@ -3,49 +3,46 @@
  */
 package com.burritopos.server.business.test;
 
-//import static org.junit.Assert.*;
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
-import org.junit.After;
-import org.junit.Before;
+import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.burritopos.server.business.ConnectionManager;
+import com.burritopos.server.presentation.StatusUI;
+import com.burritopos.server.test.BurritoPOSTestCase;
 
 /**
  * @author james.bloom
  *
  */
-public class ConnectionManagerTestCase extends TestCase {
+public class ConnectionManagerTestCase extends BurritoPOSTestCase {
+    @SuppressWarnings("unused")
+	private static Logger dLog = Logger.getLogger(ConnectionManagerTestCase.class);
+    @Autowired
+    private ConnectionManager server;
 
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@Before
-	public void setUp() throws Exception {
-		super.setUp();
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
-		super.tearDown();
+	public ConnectionManagerTestCase() {
+		super();
 	}
 
 	/**
 	 * Test method for {@link com.burritopos.server.business.ConnectionManager#run()}.
+	 * @throws InterruptedException 
 	 */
 	@Test
-	public void testRun() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for {@link com.burritopos.server.business.ConnectionManager#startServer()}.
-	 */
-	@Test
-	public void testStartServer() {
-		fail("Not yet implemented"); // TODO
+	public void testRun() throws InterruptedException {
+		assertNotNull(server);
+		
+		Thread serverThread = new Thread(server);
+		serverThread.start();
+		
+		Thread.sleep(1000);
+		
+		server.setExit(true);
+		
+		assertTrue(server.getExit());
 	}
 
 	/**
@@ -53,7 +50,13 @@ public class ConnectionManagerTestCase extends TestCase {
 	 */
 	@Test
 	public void testSetExit() {
-		fail("Not yet implemented"); // TODO
+		assertNotNull(server);
+		
+		//assertFalse(server.getExit());
+		
+		server.setExit(true);
+		
+		assertTrue(server.getExit());
 	}
 
 	/**
@@ -61,7 +64,17 @@ public class ConnectionManagerTestCase extends TestCase {
 	 */
 	@Test
 	public void testSetParent() {
-		fail("Not yet implemented"); // TODO
+		assertNotNull(server);
+		
+		StatusUI statUI = new StatusUI();
+		
+		assertNotNull(statUI);
+		
+		server.setParent(statUI);
+		
+		server.setExit(true);
+		
+		assertTrue(server.getExit());
 	}
 
 }

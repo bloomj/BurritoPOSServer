@@ -1,20 +1,26 @@
 package com.burritopos.server.business.test;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-public class AllTests {
+@RunWith(Suite.class)
+@SuiteClasses({ 
+	ConnectionManagerTestCase.class,
+	SocketManagerTestCase.class
+	})
+    public class AllTests {
+	
+    @BeforeClass 
+    public static void setUpClass() {    
 
-	public static Test suite() {
-		TestSuite suite = new TestSuite("Test for ecom.burritopos.server.business.test");
-		//$JUnit-BEGIN$
-		suite.addTest(com.burritopos.server.domain.test.AllTests.suite());
-		suite.addTest(com.burritopos.server.service.test.AllTests.suite());
-		suite.addTestSuite(ConnectionManagerTestCase.class);
-		suite.addTestSuite(SocketManagerTestCase.class);
-		suite.addTestSuite(SocketThreadTestCase.class);
-		//$JUnit-END$
-		return suite;
-	}
+    }
+    
+    @AfterClass 
+    public static void tearDownClass() { 
+
+    }
 
 }

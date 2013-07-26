@@ -1,16 +1,25 @@
 package com.burritopos.server.domain.test;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-public class AllTests {
+@RunWith(Suite.class)
+@SuiteClasses({ 
+	UserTestCase.class
+	})
+    public class AllTests {
+	
+    @BeforeClass 
+    public static void setUpClass() {    
 
-	public static Test suite() {
-		TestSuite suite = new TestSuite("Test for ecom.burritopos.server.domain.test");
-		//$JUnit-BEGIN$
-		suite.addTestSuite(UserTestCase.class);
-		//$JUnit-END$
-		return suite;
-	}
+    }
+    
+    @AfterClass 
+    public static void tearDownClass() { 
+
+    }
 
 }

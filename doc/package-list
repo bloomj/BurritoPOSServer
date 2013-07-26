@@ -6,5 +6,9 @@ com.burritopos.server.domain.test
 com.burritopos.server.exception
 com.burritopos.server.presentation
 com.burritopos.server.service
+com.burritopos.server.service.crypto
+com.burritopos.server.service.dao
+com.burritopos.server.service.dao.hibernate
+com.burritopos.server.service.dao.mongo
 com.burritopos.server.service.test
 com.burritopos.server.test

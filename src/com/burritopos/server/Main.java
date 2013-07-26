@@ -18,11 +18,13 @@
 
 package com.burritopos.server;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.log4j.*;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 //import com.burritopos.server.presentation.MainUI;
 import com.burritopos.server.presentation.StatusUI;
 
-import java.util.Date;
 //import com.burritopos.server.business.ConnectionManager;
 
 /**
@@ -30,9 +32,11 @@ import java.util.Date;
  * @author james.bloom
  */
 public class Main {
-
     private static Logger dLog = Logger.getLogger(Main.class);
 
+	// Spring configuration
+    private static final String SPRING_CONFIG_DEFAULT = "applicationContext.xml";
+    
     /**
      * @param args the command line arguments
      */
@@ -41,24 +45,44 @@ public class Main {
 			String propertiesFile = "log4j.properties";
             PropertyConfigurator.configure(propertiesFile);
 
-            dLog.info(new Date() + " | Starting Burrito POS Server execution");
+            dLog.info("Starting Burrito POS Server execution");
 
-            //main entry point into our server here
-            //ConnectionManager neatoServer = new ConnectionManager();
-            //neatoServer.start();
-            
-            // new entry point
-            StatusUI statUI = new StatusUI();
-            statUI.setBounds(0, 0, 500, 500);
-			statUI.setVisible(true);
-            //MainUI mainUI = new MainUI();
-         	//mainUI.setBounds(0, 0, 500, 500);
-         	//mainUI.setVisible(true);
+            // makes sure the StatusUI is created on the Event Dispatch Thread (EDT)
+            SwingUtilities.invokeLater(new Runnable() {
+            	public void run() {
+            		//main entry point into our server here
+            		//ConnectionManager neatoServer = new ConnectionManager();
+            		//neatoServer.start();
 
-            dLog.info(new Date() + " | Finishing Burrito POS Server execution");
+            		// new entry point
+            		//Spring Framework IoC
+            		ClassPathXmlApplicationContext beanfactory = null;
+            		StatusUI statUI = null;
+            		try {
+            			beanfactory = new ClassPathXmlApplicationContext(SPRING_CONFIG_DEFAULT);
+            			statUI = (StatusUI)beanfactory.getBean("StatusUI");
+
+            		} catch (Exception e) {
+            			dLog.error("Unable to configure Spring beans", e);
+            		} finally {
+            			if (beanfactory != null) {
+            				beanfactory.close();
+            			}
+            		}
+            		statUI.setBounds(0, 0, 500, 500);
+            		statUI.pack();
+            		statUI.setVisible(true);
+            		//MainUI mainUI = new MainUI();
+            		//mainUI.setBounds(0, 0, 500, 500);
+            		//mainUI.setVisible(true);
+            	}
+            });
+
+
+            dLog.info("Finishing Burrito POS Server execution");
 		}
 		catch(Exception e) {
-			dLog.error(new Date() + " | Exception in Main: "+e.getMessage());
+			dLog.error("Exception in Main: ", e);
 		}
     }
 }
