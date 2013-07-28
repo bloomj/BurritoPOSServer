@@ -13,56 +13,56 @@ import javax.swing.*;
 import org.apache.log4j.*;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.burritopos.server.business.ConnectionManager;
+import com.burritopos.server.business.IConnectionManager;
 
 /**
  *
  * @author james.bloom
  */
 public class StatusUI extends JFrame  {
-    /**
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private static Logger dLog = Logger.getLogger(StatusUI.class);
-    private JLabel statusLbl = new JLabel("Status: ");
-    private JList<String> statusMsgs = new JList<String>();
-    private Vector<String> statString = new Vector<String>();
-    private JScrollPane statusPane = new JScrollPane();
-    private JButton startBtn = new JButton("Start Server");
-    private JButton stopBtn = new JButton("Stop Server");
-    private ConnectionManager neatoServer;
-    private Thread neatoServerThread;
+	private JLabel statusLbl = new JLabel("Status: ");
+	private JList<String> statusMsgs = new JList<String>();
+	private Vector<String> statString = new Vector<String>();
+	private JScrollPane statusPane = new JScrollPane();
+	private JButton startBtn = new JButton("Start Server");
+	private JButton stopBtn = new JButton("Stop Server");
+	private IConnectionManager neatoServer;
+	private Thread neatoServerThread;
 
 	// Spring configuration
-    private static final String SPRING_CONFIG_DEFAULT = "applicationContext.xml";
-    
-    public StatusUI() {
+	private static final String SPRING_CONFIG_DEFAULT = "applicationContext.xml";
+
+	public StatusUI() {
 		super("Burrito POS Server");
 
 		startBtn.addActionListener (
-			new ActionListener () {
-				public void actionPerformed (ActionEvent event)
+				new ActionListener () {
+					public void actionPerformed (ActionEvent event)
 					{startBtnOnClick();}
-			}
-		);
+				}
+				);
 
 		stopBtn.addActionListener (
-			new ActionListener () {
-				public void actionPerformed (ActionEvent event)
+				new ActionListener () {
+					public void actionPerformed (ActionEvent event)
 					{stopBtnOnClick();}
-			}
-		);
+				}
+				);
 
 		//Initialize JList
 		statString.add("Burrito POS Server UI Started");
 		statusMsgs.setListData(statString);
-		
-        Container container = getContentPane();
+
+		Container container = getContentPane();
 		container.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		//c.anchor = GridBagConstraints.PAGE_START;
-        Container tContainer = new Container();
+		Container tContainer = new Container();
 		tContainer.setLayout(new FlowLayout());
 		c.fill = GridBagConstraints.CENTER;
 		c.gridx = 0;
@@ -78,19 +78,19 @@ public class StatusUI extends JFrame  {
 		c.gridy = 1;
 		//c.ipady = 300;
 		//c.ipadx = 500;
-        tContainer = new Container();
+		tContainer = new Container();
 		tContainer.setLayout(new FlowLayout());
 		statusMsgs.setPreferredSize(new Dimension(500, 400));
 		statusPane.getViewport().setView(statusMsgs);
 		statusPane.setPreferredSize(new Dimension(500, 400));
 		tContainer.add(statusLbl);
-        tContainer.add(statusPane);
-        container.add(tContainer, c);
-        
-        this.addWindowListener(new FrameListener(this));
-   }
+		tContainer.add(statusPane);
+		container.add(tContainer, c);
 
-   private void startBtnOnClick() {
+		this.addWindowListener(new FrameListener(this));
+	}
+
+	private void startBtnOnClick() {
 		dLog.trace("Start Server button has been clicked");
 
 		try {
@@ -99,7 +99,7 @@ public class StatusUI extends JFrame  {
 				ClassPathXmlApplicationContext beanfactory = null;
 				try {
 					beanfactory = new ClassPathXmlApplicationContext(SPRING_CONFIG_DEFAULT);
-					neatoServer = (ConnectionManager)beanfactory.getBean("connectionManager");
+					neatoServer = (IConnectionManager)beanfactory.getBean("secureConnectionManager");
 
 				} catch (Exception e) {
 					dLog.error("Unable to configure Spring beans", e);
@@ -108,18 +108,16 @@ public class StatusUI extends JFrame  {
 						beanfactory.close();
 					}
 				}
-		        
-		        //neatoServer = new ConnectionManager(this);
-				
+
 				// TODO: figure out why Spring isn't setting the singleton properly
 				neatoServer.setParent(this);
 			}
-			
+
 			neatoServerThread = new Thread(neatoServer);
 			neatoServerThread.start();
-			
+
 			startBtn.setEnabled(false);
-        	stopBtn.setEnabled(true);
+			stopBtn.setEnabled(true);
 		}
 		catch(Exception e) {
 			dLog.error("Exception in startBtnOnClick", e);
@@ -129,50 +127,50 @@ public class StatusUI extends JFrame  {
 	private void stopBtnOnClick() {
 		dLog.trace("Stop Button button has been clicked");
 
-        try {
-        	stopServer();
-            startBtn.setEnabled(true);
-            stopBtn.setEnabled(false);
-        }
-        catch(Exception e) {
-        	dLog.error("Exception in stopBtnOnClick: ", e);
-        }
+		try {
+			stopServer();
+			startBtn.setEnabled(true);
+			stopBtn.setEnabled(false);
+		}
+		catch(Exception e) {
+			dLog.error("Exception in stopBtnOnClick: ", e);
+		}
 	}
-	
+
 	// invoke status updates via SwingUtilities.invokeLater so it's put on the EDT
 	public void updateStatus(final String newMsg) {
-	    SwingUtilities.invokeLater(new Runnable() {
-	        public void run() {
-	    		dLog.trace("Updating Status Messages: " + newMsg);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				dLog.trace("Updating Status Messages: " + newMsg);
 
-	            try {
-	            	statString.add(newMsg);
-	        		statusMsgs.setListData(statString);
-	        		
-	        		statusMsgs.repaint();
-	            }
-	            catch(Exception e) {
-	            	dLog.error("Exception in updateStatus: ", e);
-	            }
-	        }
-	    });
+				try {
+					statString.add(newMsg);
+					statusMsgs.setListData(statString);
+
+					statusMsgs.repaint();
+				}
+				catch(Exception e) {
+					dLog.error("Exception in updateStatus: ", e);
+				}
+			}
+		});
 	}
-	
+
 	public void stopServer() {
 		dLog.trace("Stopping server");
-		
+
 		try {
 			if(neatoServer != null) {
 				neatoServer.setExit(true);
 			}
-			
+
 			if(neatoServerThread != null && neatoServerThread.isAlive()) {
 				neatoServerThread.join();
 			}
 		}
-        catch(Exception e) {
-        	dLog.error("Exception in stopServer: ", e);
-        }
+		catch(Exception e) {
+			dLog.error("Exception in stopServer: ", e);
+		}
 	}
 
 }
@@ -180,14 +178,14 @@ public class StatusUI extends JFrame  {
 class FrameListener extends WindowAdapter
 {
 	private StatusUI par;
-	
+
 	public FrameListener(StatusUI statusUI) {
 		this.par = statusUI;
 	}
 
 	public void windowClosing(WindowEvent e) {
 		this.par.stopServer();
-		
+
 		System.exit(0);
 	}
 }

@@ -20,7 +20,7 @@ import com.burritopos.server.presentation.StatusUI;
  *
  * @author james.bloom
  */
-public class ConnectionManager implements Runnable {
+public class ConnectionManager implements IConnectionManager {
     private static Logger dLog = Logger.getLogger(ConnectionManager.class);
     private ServerSocket server = null;
     private boolean exit = false;

@@ -24,6 +24,18 @@
         </constructor-arg>
     </bean>
     
+    <bean id="keystorePath" class="java.lang.String">
+        <constructor-arg type="java.lang.String">
+            <value>${ssl.keyStore.path}</value>
+        </constructor-arg>
+    </bean>
+    
+    <bean id="keystorePassword" class="java.lang.String">
+        <constructor-arg type="java.lang.String">
+            <value>${ssl.keyStore.password}</value>
+        </constructor-arg>
+    </bean>
+    
 	<!-- Presentation Layer -->
 	<!-- Going to statically load these for variation -->
 	<!-- <bean id="mainUI" class="com.burritopo.server.presentation.MainUI/"> -->
@@ -31,14 +43,29 @@
 
 	<!-- Business Layer, Autowired annotation -->
 	<!-- Autowired will find the beans automagically so no need to identify the bean as a property -->
-    <bean id="connectionManager" class="com.burritopos.server.business.ConnectionManager" scope="singleton">
+	<bean id="secureConnectionManager" class="com.burritopos.server.business.SecureConnectionManager" scope="singleton">
     	<constructor-arg type="com.burritopos.server.presentation.StatusUI">
             <ref bean="StatusUI"/>
         </constructor-arg>
         <constructor-arg type="java.lang.String">
             <ref bean="burritoposServerPort"/>
         </constructor-arg>
+        <constructor-arg type="java.lang.String">
+            <ref bean="keystorePath"/>
+        </constructor-arg>
+        <constructor-arg type="java.lang.String">
+            <ref bean="keystorePassword"/>
+        </constructor-arg>
 	</bean>
+	<!-- Use secure connection manager -->
+    <!-- <bean id="connectionManager" class="com.burritopos.server.business.ConnectionManager" scope="singleton">
+    	<constructor-arg type="com.burritopos.server.presentation.StatusUI">
+            <ref bean="StatusUI"/>
+        </constructor-arg>
+        <constructor-arg type="java.lang.String">
+            <ref bean="burritoposServerPort"/>
+        </constructor-arg>
+	</bean> -->
 	<!-- <bean id="socketManager" class="com.burritopos.server.business.SocketManager"/> -->
 	
 	<!-- Service Layer, get/set methods -->

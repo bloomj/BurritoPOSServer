@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.burritopos.server.business.ConnectionManager;
+import com.burritopos.server.business.IConnectionManager;
 import com.burritopos.server.presentation.StatusUI;
 import com.burritopos.server.test.BurritoPOSTestCase;
 
@@ -21,7 +21,7 @@ public class ConnectionManagerTestCase extends BurritoPOSTestCase {
     @SuppressWarnings("unused")
 	private static Logger dLog = Logger.getLogger(ConnectionManagerTestCase.class);
     @Autowired
-    private ConnectionManager server;
+    private IConnectionManager server;
 
 	public ConnectionManagerTestCase() {
 		super();

@@ -62,6 +62,18 @@ public class SocketManager implements Runnable {
     	this(socket);
     	this.parent = parent;
     }
+    
+    public void close() throws IOException {
+        if(in != null) {
+        	in.close();
+        }
+        if(out != null) {
+        	out.close();
+        }
+        if(socket != null && !socket.isClosed()) {
+        	socket.close();
+        }
+    }
 
     @Override
     public void run() {
@@ -79,6 +91,7 @@ public class SocketManager implements Runnable {
             while (!exit) {
                 out = new ObjectOutputStream(socket.getOutputStream());
                 in  = new ObjectInputStream(socket.getInputStream());
+                dLog.trace("Successfully got input/output streams");
 
                 String inputStr = "";
                 out.writeObject("Burrito POS Server Connected. Enter Username: ");
@@ -90,7 +103,7 @@ public class SocketManager implements Runnable {
                 parent.updateStatus(appendInfo("INPUT | " + inputStr));
 
                 while(!inputStr.equals("exit") && !this.exit) {
-
+                	dLog.trace("Exit? " + exit);
                     if(tUser.getUserName() == null) {
                         tUser.setUserName(inputStr);
                         out.writeObject("OK User " + inputStr + ", enter password: ");
@@ -138,13 +151,12 @@ public class SocketManager implements Runnable {
 
                 exit = true;
                 try {
+                	dLog.trace("Closing the socket");
                     auth = false;
                     out.writeObject("Exiting");
                     dLog.trace("Exiting");
                     parent.updateStatus(appendInfo("Exiting"));
-                    in.close();
-                    out.close();
-                    socket.close();
+                    this.close();
                 }
                 catch(Exception e1) {
                     dLog.error("Exception in closing socket", e1);

@@ -17,7 +17,7 @@ Currently demonstrates
 * Factory Pattern
 * Spring
 * N-tier architecture
-* client/server comms
+* client/server comms (Cleartext & TLS)
 * Mongo (NoSQL)
 * JavaDoc
   
