@@ -69,7 +69,14 @@
 	<!-- <bean id="socketManager" class="com.burritopos.server.business.SocketManager"/> -->
 	
 	<!-- Service Layer, get/set methods -->
-	<bean id="userSvc" class="com.burritopos.server.service.dao.mongo.UserSvcImpl" scope="singleton"/>
+	<bean id="userSvc" class="com.burritopos.server.service.dao.mongo.UserSvcImpl" scope="singleton">
+		<constructor-arg type="java.lang.String"><value>${mongo.ip}</value></constructor-arg>
+		<constructor-arg type="java.lang.String"><value>${mongo.databasename}</value></constructor-arg>
+	</bean>
+	<bean id="groupSvc" class="com.burritopos.server.service.dao.mongo.GroupSvcImpl" scope="singleton">
+		<constructor-arg type="java.lang.String"><value>${mongo.ip}</value></constructor-arg>
+		<constructor-arg type="java.lang.String"><value>${mongo.databasename}</value></constructor-arg>
+	</bean>
 	
 	<!-- Domain Layer -->
 	

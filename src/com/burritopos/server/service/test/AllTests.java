@@ -8,8 +8,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ 
-	BCryptTestCase.class,
 	FactoryTestCase.class,
+	GroupSvcImplTestCase.class,
 	UserSvcImplTestCase.class
 	})
     public class AllTests {

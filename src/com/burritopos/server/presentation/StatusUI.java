@@ -133,7 +133,7 @@ public class StatusUI extends JFrame  {
 			stopBtn.setEnabled(false);
 		}
 		catch(Exception e) {
-			dLog.error("Exception in stopBtnOnClick: ", e);
+			dLog.error("Exception in stopBtnOnClick", e);
 		}
 	}
 
@@ -150,7 +150,7 @@ public class StatusUI extends JFrame  {
 					statusMsgs.repaint();
 				}
 				catch(Exception e) {
-					dLog.error("Exception in updateStatus: ", e);
+					dLog.error("Exception in updateStatus", e);
 				}
 			}
 		});
@@ -169,7 +169,7 @@ public class StatusUI extends JFrame  {
 			}
 		}
 		catch(Exception e) {
-			dLog.error("Exception in stopServer: ", e);
+			dLog.error("Exception in stopServer", e);
 		}
 	}
 

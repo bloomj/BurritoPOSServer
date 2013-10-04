@@ -59,7 +59,7 @@
         <mkdir dir="${report.dir}"/>
         <junit printsummary="yes" haltonfailure="true" enableTestListenerEvents="true">
             <classpath>
-            	<fileset dir="${lib.dir}" includes="*.jar"/>
+            	<fileset dir="${lib.dir}" includes="*.jar" excludes="BurritoPOSClient.jar"/>
             	<fileset dir="${build.dir}" includes="BurritoPOSserver.jar"/>
             </classpath>
         	

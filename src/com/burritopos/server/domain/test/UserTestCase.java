@@ -33,6 +33,7 @@ public class UserTestCase extends BurritoPOSTestCase {
 	public void testValidUser() throws AssertionFailedError {
 		User u = new User();
 		u.setId(new Integer("1"));
+		u.addGroupId(new Integer("1"));
 		u.setUserName("Jim");
 		u.setPassword(BCrypt.hashpw("password", BCrypt.gensalt()));
 
@@ -56,6 +57,7 @@ public class UserTestCase extends BurritoPOSTestCase {
 	public void testEqualsUser() throws AssertionFailedError {
 		User u = new User();
 		u.setId(new Integer("1"));
+		u.addGroupId(new Integer("1"));
 		u.setUserName("Jim");
 		u.setPassword(BCrypt.hashpw("password", BCrypt.gensalt()));
 		User x = u;
@@ -70,6 +72,7 @@ public class UserTestCase extends BurritoPOSTestCase {
 	public void testNotEqualsUser() throws AssertionFailedError {
 		User u = new User();
 		u.setId(new Integer("1"));
+		u.addGroupId(new Integer("1"));
 		u.setUserName("Jim");
 		u.setPassword(BCrypt.hashpw("password", BCrypt.gensalt()));
 		User x = new User();

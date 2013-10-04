@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.*;
 // TODO: figure out how to clean up Spring
@@ -12,7 +13,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.burritopos.server.domain.User;
 import com.burritopos.server.presentation.StatusUI;
-import com.burritopos.server.service.crypto.BCrypt;
+import com.burritopos.server.service.crypto.*;
 import com.burritopos.server.service.dao.IUserSvc;
 
 /**
@@ -27,7 +28,7 @@ public class SocketManager implements Runnable {
     private boolean exit = false;
     private boolean auth = false;
     private User tUser;
-    private ArrayList<User> users;
+    private List<User> users;
     private static String SOCKET_PORT;
     private StatusUI parent;
     private IUserSvc userSvc;

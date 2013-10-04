@@ -43,6 +43,56 @@ public class UserSvcImpl extends BaseSvcImpl implements IUserSvc {
 
 		return u;
 	}
+	
+	@Override
+	public User getUser(String userName) throws Exception {
+		dLog.info("Entering method getUser | User name: "+userName);
+		User u = null;
+		Session session = null;
+
+		try {
+			session = getSession();
+			Transaction tranx = session.beginTransaction();
+			u = (User)session.get(User.class, userName);
+			tranx.commit();
+		} 
+		catch(Exception e) {
+			dLog.error("Exception in getUser", e);
+		}
+		finally {
+			//ensure that session is close regardless of the errors in try/catch
+			if(session != null) {
+				session.close();
+			}
+		}
+
+		return u;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<User> getUsers(Integer groupid) throws Exception {
+		dLog.info("Entering method getUser | Group ID: "+groupid);
+		List<User> users = new ArrayList<User>();
+		Session session = null;
+
+		try {
+			session = getSession();
+			String hql = "from User where groupid = " + groupid.toString();
+			users = session.createQuery(hql).list();
+		} 
+		catch(Exception e) {
+			dLog.error("Exception in getUser", e);
+		}
+		finally {
+			//ensure that session is close regardless of the errors in try/catch
+			if(session != null) {
+				session.close();
+			}
+		}
+
+		return users;
+	}
 
 	@Override
 	public boolean storeUser(User u) throws Exception {
@@ -127,7 +177,7 @@ public class UserSvcImpl extends BaseSvcImpl implements IUserSvc {
 			session.evict(User.class);
 		} 
 		catch(Exception e) {
-			dLog.error("Exception in getAllOrders", e);
+			dLog.error("Exception in getAllUsers", e);
 		}
 		finally {
 			//ensure that session is close regardless of the errors in try/catch

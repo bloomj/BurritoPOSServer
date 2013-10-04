@@ -3,25 +3,43 @@
  */
 package com.burritopos.server.service.dao.mongo;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.burritopos.server.domain.User;
 import com.burritopos.server.service.dao.IUserSvc;
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
-import com.mongodb.Mongo;
 import com.mongodb.WriteResult;
 
 /**
  * @author james.bloom
  *
  */
-public class UserSvcImpl implements IUserSvc {
+public class UserSvcImpl extends BaseSvcImpl implements IUserSvc {
 	private static Logger dLog = Logger.getLogger(UserSvcImpl.class);
+	protected static final String USER_COLLECTION = "user";
+	
+	/**
+	 * Standard Constructor
+	 * @throws IOException
+	 */
+	public UserSvcImpl() throws IOException {
+    	super();
+	}
+	
+	/**
+	 * Constructor for Spring
+	 * @param mongodb
+	 */
+	public UserSvcImpl(String mongoip, String mongodb) {
+		super(mongoip, mongodb);
+	}
 	
 	/* (non-Javadoc)
 	 * @see com.burritopos.server.service.IUserSvc#storeUser(com.burritopos.server.domain.User)
@@ -31,9 +49,7 @@ public class UserSvcImpl implements IUserSvc {
 		dLog.info("Entering method storeUser | User ID: "+u.getId());
 		boolean result = false;
 
-		Mongo m = new Mongo();
-		DB db = m.getDB("neatoBurrito");
-		DBCollection coll = db.getCollection("user");
+		DBCollection coll = getCollection(USER_COLLECTION);
 
 		BasicDBObject query = new BasicDBObject();
 		query.put("id", u.getId());
@@ -41,6 +57,12 @@ public class UserSvcImpl implements IUserSvc {
 		dLog.trace("Finding if user exists");
 		BasicDBObject myDoc = (BasicDBObject) coll.findOne(query);
 
+		BasicDBList groups = new BasicDBList();
+		for(Integer i : u.getGroupId()){
+			groups.add(i);
+		}
+		query.append("Groups", groups);
+		
 		query.put("password", u.getPassword());
 		query.put("userName", u.getUserName());
 
@@ -74,27 +96,38 @@ public class UserSvcImpl implements IUserSvc {
 	@Override
 	public User getUser(Integer id) throws Exception {
 		dLog.info("Entering method getUser | User ID: "+id);
-		User u = new User();
-
-		Mongo m = new Mongo();
-		DB db = m.getDB("neatoBurrito");
-		DBCollection coll = db.getCollection("user");
 
 		BasicDBObject query = new BasicDBObject();
 		query.put("id", id);
 
-		BasicDBObject myDoc = (BasicDBObject) coll.findOne(query);
+		return initializeUser(findOne(query, USER_COLLECTION));
+	}
+	
+	@Override
+	public User getUser(String userName) throws Exception {
+		dLog.info("Entering method getUser | User name: "+userName);
 
-		//ensure we were passed a valid object before attempting to write
-		dLog.trace("myDoc: " + myDoc);
-		if(myDoc != null) {
-			u.setId(id);
-			u.setUserName(myDoc.getString("userName"));
-			u.setPassword(myDoc.getString("password"));
+		BasicDBObject query = new BasicDBObject();
+		query.put("userName", userName);
+
+		return initializeUser(findOne(query, USER_COLLECTION));
+	}
+	
+	@Override
+	public List<User> getUsers(Integer groupid) throws Exception {
+		dLog.info("Entering method getUser | Group ID: "+groupid);
+		List<User> users = new ArrayList<User>();
+		
+		BasicDBObject query = new BasicDBObject();
+		query.append("Groups", groupid);
+
+		DBCursor results = findAll(query, USER_COLLECTION);
+		while(results.hasNext()) {
+			BasicDBObject user = (BasicDBObject) results.next();
+			users.add(initializeUser(user));
 		}
-		dLog.trace("Finished setting user");
-
-		return u;
+				
+		return users;
 	}
 
 	/* (non-Javadoc)
@@ -102,12 +135,10 @@ public class UserSvcImpl implements IUserSvc {
 	 */
 	@Override
 	public boolean deleteUser(Integer id) throws Exception {
-		dLog.info("Entering method deleteUser | Employee ID:"+id);
+		dLog.info("Entering method deleteUser | User ID:"+id);
 		boolean result = false;
 
-		Mongo m = new Mongo();
-		DB db = m.getDB("neatoBurrito");
-		DBCollection coll = db.getCollection("user");
+		DBCollection coll = getCollection(USER_COLLECTION);
 
 		BasicDBObject query = new BasicDBObject();
 		query.put("id", id);
@@ -131,9 +162,7 @@ public class UserSvcImpl implements IUserSvc {
 		dLog.info("Entering method getAllUsers");
 		ArrayList<User> result = new ArrayList<User>();
 
-		Mongo m = new Mongo();
-		DB db = m.getDB("neatoBurrito");
-		DBCollection coll = db.getCollection("user");
+		DBCollection coll = getCollection(USER_COLLECTION);
 
 		DBCursor cur = coll.find();
 
@@ -145,4 +174,29 @@ public class UserSvcImpl implements IUserSvc {
 		return result;
 	}
 
+	/**
+	 * Initializes a User object from a Mongo query
+	 * @param myDoc
+	 * @return
+	 */
+	private User initializeUser(BasicDBObject myDoc) {
+		User u = new User();
+
+		//ensure we were passed a valid object before attempting to write
+		dLog.trace("myDoc: " + myDoc);
+		if(myDoc != null) {
+			u.setId(myDoc.getInt("id"));
+
+			BasicDBList groups = (BasicDBList) myDoc.get("Groups");
+			for(Object obj : groups) {
+				u.addGroupId(Integer.parseInt(obj.toString()));
+			}
+			u.setUserName(myDoc.getString("userName"));
+			u.setPassword(myDoc.getString("password"));
+		}
+		dLog.trace("Finished setting user");
+
+		return u;
+	}
+	
 }

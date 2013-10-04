@@ -11,5 +11,6 @@
     <property name="current_session_context_class">thread</property>
     <property name="hibernate.show_sql">true</property>
     <mapping resource="User.hbm.xml"/>
+    <mapping resource="Group.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>
